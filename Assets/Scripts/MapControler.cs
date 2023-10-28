@@ -1,9 +1,19 @@
 using System;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MapControler : MonoBehaviour
 {
+    [SerializeField]
+    private Sprite tileSprite;
+    [SerializeField]
+    public int rows;
+    [SerializeField]
+    public int cols;
+    [SerializeField]
+    public float mineChance;
+
     private IMap map;
     private IMapMover mapMover;
     private IFieldInteractor fieldInteractor;
@@ -17,6 +27,7 @@ public class MapControler : MonoBehaviour
 
     public void CreateMap(int rowCount)
     {
+        map.tileSprite = tileSprite;
         for(int i = 0; i < rowCount; i++)
         {
             map.CreateNewRow();
@@ -57,7 +68,7 @@ public interface IMapMover
 
 public class MapMover : IMapMover
 {
-    private IMap map;
+    private readonly IMap map;
 
     public MapMover(IMap generator)
     {
@@ -76,28 +87,35 @@ public interface IMap
 {
     void CreateNewRow();
     void RemoveLastRow();
+
+
+    Sprite tileSprite { set; }
+    int rows { get; set; }
+    int cols { get; set; }
+    float mineChance { set; }
 }
 
 public class Map : IMap
 {
     public MapTile[,] map;
-    public int rows; // Number of rows in the map.
-    public int cols; // Number of columns in the map.
-    public int mineCount; // Number of mines in the map.
+    public Transform[,] mapTransform;
+    public Sprite tileSprite { private get; set; }
+    public int rows { get; set; } // Number of rows in the map.
+    public int cols { get; set; } // Number of columns in the map.
 
-    public float mineChance;
-
-    public Map() { }
+    public float mineChance { private get; set; }
 
     public void CreateNewRow()
     {
         // Create a new row at the top of the map.
         MapTile[,] newMap = new MapTile[rows + 1, cols];
+        Transform[,] newMapTransform = new Transform[rows + 1, cols];
 
         // Initialize the new row with MapTile objects.
         for (int i = 0; i < cols; i++)
         {
             newMap[0, i] = CreateNewMapTile();
+            newMapTransform[0, i] = CreateNewTile(0, i);
         }
 
         // Copy the existing map into the new map, shifting it down.
@@ -126,6 +144,15 @@ public class Map : IMap
             newTile.ContainsMine = true;
         }
         // Initialize the new tile as needed, e.g., set its state, check for mines, etc.
+        return newTile;
+    }
+
+    private Transform CreateNewTile(int posX, int posY)
+    {
+        Transform newTile = new GameObject().transform;
+        newTile.position = new Vector2(posX, posY);
+        newTile.AddComponent<SpriteRenderer>().sprite = tileSprite;
+
         return newTile;
     }
 
