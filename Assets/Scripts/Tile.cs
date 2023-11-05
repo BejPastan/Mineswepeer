@@ -37,6 +37,7 @@ public class TileState
     {
         this.isMine = isMine;
         this.isTrench = isTrench;
+
     }
 
     public void SetAdjecentMines(int adjecentMines)
@@ -60,5 +61,10 @@ public class TileState
     public bool IsMine
     {
         get { return isMine; }
+    }
+
+    public void setTrench()
+    {
+        isTrench = true;
     }
 }

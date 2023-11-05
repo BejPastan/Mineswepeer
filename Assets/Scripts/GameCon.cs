@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameCon : MonoBehaviour
 {
     //manage game states
         //play, pause, end, start
