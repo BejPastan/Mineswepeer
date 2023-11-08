@@ -4,11 +4,17 @@ using UnityEngine;
 public class MapGen : MonoBehaviour
 {
     int width, height;
+    [SerializeField]
     float mineChance;
+    [SerializeField]
+    GameObject tilePref;
     Tile[,] map = new Tile[0,0];
 
     public void GenerateMap(int width, int height)
     {
+        this.width = width;
+        this.height = height;
+        
         for(int i = 0; i < height; i++)
         {
             RowGen();
@@ -19,12 +25,15 @@ public class MapGen : MonoBehaviour
     {
         int mapHeight = map.GetLength(1);
         
-        Resize2DArray(ref map, map.GetLength(0), mapHeight);
+        Resize2DArray(ref map, width, mapHeight+1);
 
         for(int xPos = 0; xPos < width; ++xPos)
         {
             TileState state;
             //generating Tile
+            Debug.Log("test");
+            GameObject newTile = Instantiate(tilePref);
+            Debug.Log(newTile);
             if(UnityEngine.Random.Range(0, 1)>mineChance)
             {
                 state = new TileState(false, false);
@@ -34,9 +43,12 @@ public class MapGen : MonoBehaviour
                 state = new TileState(true, false);
             }
             Vector2 location = new Vector2(xPos, mapHeight);
+            Tile tileData = newTile.AddComponent<Tile>();
+            tileData.TileConstructor(state, location);
 
-            map[xPos, mapHeight] = new Tile(state, location);
+            Debug.Log("mapHeight:" + mapHeight + ", map height:" + map.GetLength(1) + ", xPos:" + xPos + "map width:" + map.GetLength(0));
 
+            map[xPos, mapHeight] = tileData;
             //sprawdza czy Tile xPos-1 istnieje
             if (xPos>0)
             {
@@ -102,6 +114,7 @@ public class MapGen : MonoBehaviour
                 newArray[i, j] = originalArray[i, j];
             }
         }
+        originalArray = newArray;
     }
 
 }

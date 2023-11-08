@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private readonly TileState state;
+    private TileState state;
 
-    public Tile(TileState state, Vector2 location)
+    public void TileConstructor(TileState state, Vector2 location)
     {
         this.state = state;
+        //Debug.Log(transform.position);
         gameObject.transform.position = location;
     }
 
