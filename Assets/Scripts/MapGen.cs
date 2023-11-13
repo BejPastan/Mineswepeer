@@ -1,27 +1,19 @@
 ﻿using System;
 using UnityEngine;
 
-public class MapGen : MonoBehaviour
+public static class MapGen
 {
-    int width, height;
-    [SerializeField]
-    float mineChance;
-    [SerializeField]
-    GameObject tilePref;
-    Tile[,] map = new Tile[0,0];
-
-    public void GenerateMap(int width, int height)
+    public static Tile[,] GenerateMap(int width, int height, GameObject tilePref, float mineChance, ref Tile[,] map)
     {
-        this.width = width;
-        this.height = height;
-        
         for(int i = 0; i < height; i++)
         {
-            RowGen();
+            RowGen(width, ref map, tilePref, mineChance);
         }
+
+        return map;
     }
 
-    private void RowGen()
+    static void RowGen(int width, ref Tile[,] map,GameObject tilePref,float mineChance)
     {
         int mapHeight = map.GetLength(1);
         
@@ -31,9 +23,6 @@ public class MapGen : MonoBehaviour
         {
             TileState state;
             //generating Tile
-            Debug.Log("test");
-            GameObject newTile = Instantiate(tilePref);
-            Debug.Log(newTile);
             if(UnityEngine.Random.Range(0, 1)>mineChance)
             {
                 state = new TileState(false, false);
@@ -43,10 +32,11 @@ public class MapGen : MonoBehaviour
                 state = new TileState(true, false);
             }
             Vector2 location = new Vector2(xPos, mapHeight);
+            GameObject newTile = new GameObject();
             Tile tileData = newTile.AddComponent<Tile>();
-            tileData.TileConstructor(state, location);
+            tileData.CreateTile(tilePref);
+            newTile.AddComponent<Tile>().TileConstructor(state, location);
 
-            Debug.Log("mapHeight:" + mapHeight + ", map height:" + map.GetLength(1) + ", xPos:" + xPos + "map width:" + map.GetLength(0));
 
             map[xPos, mapHeight] = tileData;
             //sprawdza czy Tile xPos-1 istnieje
@@ -55,7 +45,7 @@ public class MapGen : MonoBehaviour
                 //oblicza liczbę min wokół pola xPos-1
                 if (!map[xPos, mapHeight].IsMine)
                 {
-                    map[xPos,mapHeight].SetAdjecentMines(AdjacentMins(xPos, mapHeight));
+                    map[xPos,mapHeight].SetAdjecentMines(AdjacentMins(xPos, mapHeight, ref map));
                 }
                 if(mapHeight>0) 
                 {
@@ -65,7 +55,7 @@ public class MapGen : MonoBehaviour
         }
     }
 
-    private int AdjacentMins(int xPos, int yPos)
+    static int AdjacentMins(int xPos, int yPos, ref Tile[,] map)
     {
         int mines = 0;
 
@@ -90,12 +80,6 @@ public class MapGen : MonoBehaviour
 
         return mines;
     }
-    
-    public void MoveMap(int x)
-    {
-
-    }
-
 
     static void Resize2DArray<T>(ref T[,] originalArray, int newRowCount, int newColumnCount)
     {
@@ -116,5 +100,4 @@ public class MapGen : MonoBehaviour
         }
         originalArray = newArray;
     }
-
 }

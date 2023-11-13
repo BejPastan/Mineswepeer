@@ -3,12 +3,23 @@ using UnityEngine;
 public class GameCon : MonoBehaviour
 {
     [SerializeField]
-    MapGen map;
+    MapHandler map;
+    GameState gameState = GameState.start;
     //manage game states
         //play, pause, end, start
 
     private void Start()
     {
-        map.GenerateMap(10, 10);
+        map.CreateMap();
     }
+
+
 }
+
+enum GameState
+{
+    play,
+    pause,
+    end,
+    start
+};
