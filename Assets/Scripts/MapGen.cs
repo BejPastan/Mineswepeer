@@ -32,11 +32,9 @@ public static class MapGen
                 state = new TileState(true, false);
             }
             Vector2 location = new Vector2(xPos, mapHeight);
-            GameObject newTile = new GameObject();
-            Tile tileData = newTile.AddComponent<Tile>();
-            tileData.CreateTile(tilePref);
+            GameObject newTile = GameObject.Instantiate(tilePref);
             newTile.AddComponent<Tile>().TileConstructor(state, location);
-
+            Tile tileData = newTile.GetComponent<Tile>();
 
             map[xPos, mapHeight] = tileData;
             //sprawdza czy Tile xPos-1 istnieje

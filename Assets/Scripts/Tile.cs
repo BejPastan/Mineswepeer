@@ -4,12 +4,6 @@ public class Tile : MonoBehaviour
 {
     private TileState state;
 
-    public GameObject CreateTile(GameObject tilePref)
-    {
-        GameObject tile = Instantiate(tilePref);
-        return tile;
-    }
-
     public void TileConstructor(TileState state, Vector2 location)
     {
 

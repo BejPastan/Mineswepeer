@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MapHandler : MonoBehaviour
 {
@@ -15,5 +15,18 @@ public class MapHandler : MonoBehaviour
     {
         MapGen.GenerateMap(width, height, tilePref, mineChance, ref map);
 
+    }
+
+    private void OnMouseDown()
+    {
+        //wybiera Tile'a którego nacisnął
+
+        //sprawdza czy trafił na minę
+            //Ewentualnie jeśli trafił na pole wokół którego nie ma min(RevealMap)
+    }
+
+    private void RevealMap()
+    {
+        //odkrywanie oustych pól na mapie wokół odkrytego pola
     }
 }
