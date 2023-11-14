@@ -3,17 +3,17 @@ using UnityEngine;
 
 public static class MapGen
 {
-    public static Tile[,] GenerateMap(int width, int height, GameObject tilePref, float mineChance, ref Tile[,] map)
+    public static Tile[,] GenerateMap(int width, int height, GameObject tilePref, float mineChance, Vector2 shift, ref Tile[,] map)
     {
         for(int i = 0; i < height; i++)
         {
-            RowGen(width, ref map, tilePref, mineChance);
+            RowGen(width, ref map, tilePref, mineChance, shift);
         }
 
         return map;
     }
 
-    static void RowGen(int width, ref Tile[,] map,GameObject tilePref,float mineChance)
+    static void RowGen(int width, ref Tile[,] map,GameObject tilePref,float mineChance, Vector2 shift)
     {
         int mapHeight = map.GetLength(1);
         
@@ -23,7 +23,7 @@ public static class MapGen
         {
             TileState state;
             //generating Tile
-            if(UnityEngine.Random.Range(0, 1)>mineChance)
+            if(UnityEngine.Random.Range(0, 100)>(mineChance))
             {
                 state = new TileState(false, false);
             }
@@ -33,23 +33,35 @@ public static class MapGen
             }
             Vector2 location = new Vector2(xPos, mapHeight);
             GameObject newTile = GameObject.Instantiate(tilePref);
-            newTile.AddComponent<Tile>().TileConstructor(state, location);
+            newTile.AddComponent<Tile>().TileConstructor(state, location+shift);
             Tile tileData = newTile.GetComponent<Tile>();
 
             map[xPos, mapHeight] = tileData;
+                       
+        }
+        //ustawianie min dla każdego Tile'a
+        for(int xPos = 0;xPos < width; ++xPos)
+        {
             //sprawdza czy Tile xPos-1 istnieje
-            if (xPos>0)
+            if (xPos > 0)
             {
                 //oblicza liczbę min wokół pola xPos-1
                 if (!map[xPos, mapHeight].IsMine)
                 {
-                    map[xPos,mapHeight].SetAdjecentMines(AdjacentMins(xPos, mapHeight, ref map));
+                    map[xPos, mapHeight].SetAdjecentMines(AdjacentMins(xPos, mapHeight, ref map));
                 }
-                if(mapHeight>0) 
+                if (mapHeight > 0)
                 {
-                    
+                    for (int x = xPos - 1; x <= xPos + 1; x++)
+                    {
+                        try
+                        {
+                            map[x, mapHeight - 1].SetAdjecentMines(AdjacentMins(x, mapHeight - 1, ref map));
+                        }
+                        catch { }
+                    }
                 }
-            }            
+            }
         }
     }
 
@@ -57,22 +69,20 @@ public static class MapGen
     {
         int mines = 0;
 
-        for(int x = xPos-1; x<xPos+1; x++)
+        for(int x = xPos - 1; x<=xPos+1; x++)
         {
-            for (int y = yPos - 1; y < yPos + 1; y++)
+            for (int y = yPos - 1; y <=yPos + 1; y++)
             {
-                if(x==xPos && y==yPos)
+                if(x!=xPos || y!=yPos)
                 {
-                    continue;
-                }
-                try
-                {
-                    if(map[x, y].IsMine)
+                    try
                     {
-                        mines++;
-                    }
+                        if (map[x, y].IsMine)
+                        {
+                            mines++;
+                        }
+                    } catch { }
                 }
-                catch{ }  
             }
         }
 
