@@ -21,23 +21,37 @@ public class MapHandler : MonoBehaviour
     }
 
     //muszę tutaj dodać rozróżnianie prawy lewy przycisk, aktualnie nie reaguje na prawy
-    private void OnMouseDown()
+    private void OnMouseOver()
     {
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        //wybiera Tile'a którego nacisnął
-        Tile selectedTile = GetTileOnPlace(mousePosition);
-        
-        if (selectedTile != null)
+        if(Input.GetMouseButtonDown(0))
         {
-            //false is mine
-            if(selectedTile.Revel())
+            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            //wybiera Tile'a którego nacisnął
+            Tile selectedTile = GetTileOnPlace(mousePosition);
+            if (selectedTile != null)
             {
-                
+                //false is mine
+                if (selectedTile.Revel())
+                {
+
+                }
+            }
+            //sprawdza czy trafił na minę
+                //Ewentualnie jeśli trafił na pole wokół którego nie ma min(RevealMap)
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            //wybiera Tile'a którego nacisnął
+            Tile selectedTile = GetTileOnPlace(mousePosition);
+            if(selectedTile != null)
+            {
+                selectedTile.Flag();
             }
         }
-        //sprawdza czy trafił na minę
-            //Ewentualnie jeśli trafił na pole wokół którego nie ma min(RevealMap)
+
     }
 
     private void RevealMap()

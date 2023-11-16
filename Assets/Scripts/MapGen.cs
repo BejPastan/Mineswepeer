@@ -10,6 +10,9 @@ public static class MapGen
             RowGen(width, ref map, tilePref, mineChance, shift);
         }
 
+        //generacja okopów
+        GenerateTrench(ref map);
+
         return map;
     }
 
@@ -25,11 +28,11 @@ public static class MapGen
             //generating Tile
             if(UnityEngine.Random.Range(0, 100)>(mineChance))
             {
-                state = new TileState(false, false);
+                state = new TileState(false);
             }
             else
             {
-                state = new TileState(true, false);
+                state = new TileState(true);
             }
             Vector2 location = new Vector2(xPos, mapHeight);
             GameObject newTile = GameObject.Instantiate(tilePref);
@@ -87,6 +90,36 @@ public static class MapGen
         }
 
         return mines;
+    }
+
+    static void GenerateTrench(ref Tile[,] map)
+    {
+        //generuje serie po 4-6 tile'i okopów obok siebie, ma 20% szansa na pójście w górę 
+        for(int yPos = 5; yPos < map.GetLength(1);yPos++)
+        {
+            int inRow = 0;
+            for (int xPos =0; xPos < map.GetLength(0); xPos++)
+            {
+                if (map[xPos, yPos].IsMine && map[xPos, yPos].AdjacementMines==0)
+                {
+                    inRow++;
+                }
+                else
+                {
+                    //tutaj sprawdza czy ma już wystarczająco długi łańcuch żeby zrobić okopy
+                    if(inRow>=4)
+                    {
+                        inRow-=UnityEngine.Random.Range(0, inRow-3);
+                        //generuje okop
+                        for(int x = 0;  x < inRow; x++)
+                        {
+                            map[xPos-inRow+x, yPos].SetTrench();
+                        }
+                    }
+                    inRow = 0;
+                }
+            }
+        }
     }
 
     static void Resize2DArray<T>(ref T[,] originalArray, int newRowCount, int newColumnCount)

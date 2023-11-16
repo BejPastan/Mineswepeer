@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
@@ -6,11 +6,41 @@ public class Tile : MonoBehaviour
     private TileState state;
     [SerializeField]
     Sprite reveladSprite;
+    Transform flag;
+    Transform text;
+    bool trench;
 
     public void TileConstructor(TileState state, Vector2 location)
     {
         this.state = state;
         gameObject.transform.position = location;
+
+
+        Transform[] potentialFlags = GetComponentsInChildren<Transform>();
+        for(int i = 0; i < potentialFlags.Length; i++)
+        {
+            if (potentialFlags[i].name == "Flag")
+            {
+                flag = potentialFlags[i];
+                break;
+            }
+        }
+
+        Transform[] potentialText = GetComponentsInChildren<Transform>();
+        for (int i = 0; i < potentialText.Length; i++)
+        {
+            if (potentialText[i].name == "MineText")
+            {
+                text = potentialText[i];
+                break;
+            }
+        }
+    }
+
+    public void SetTrench()
+    {
+        trench = true;
+        //tutaj musi podmieniać sprite i wyłączać metody
     }
 
     public void SetAdjecentMines(int adjecentMines)
@@ -21,19 +51,37 @@ public class Tile : MonoBehaviour
     public bool Revel()
     {
         bool notMine = state.Revel();
-
-        if(notMine)
+        
+        if(!state.isFlaged)
         {
-            GetComponentInChildren<TextMesh>().text = AdjacementMines.ToString();
-            GetComponent<SpriteRenderer>().sprite = reveladSprite;
+            if (notMine)
+            {
+                //tutaj fajnie jakby nie wstawiał tekstu jeśli nie ma min wokół
+                text.GetComponent<TextMesh>().text = AdjacementMines.ToString();
+                GetComponent<SpriteRenderer>().sprite = reveladSprite;
+            }
+            else
+            {
+                //znalazł minę
+                text.GetComponent<TextMesh>().text = "M";
+            }
+            return notMine;
+        }
+        return true;
+    }
+
+    public void Flag()
+    {
+        if(state.isFlaged)
+        {
+            state.isFlaged = false;
+            flag.GetComponent<SpriteRenderer>().enabled = false;
         }
         else
         {
-            GetComponentInChildren<TextMesh>().text = "M";
+            state.isFlaged = true;
+            flag.GetComponent<SpriteRenderer>().enabled = true;
         }
-
-
-        return notMine;
     }
 
     public bool IsMine
@@ -50,14 +98,13 @@ public class Tile : MonoBehaviour
 public class TileState
 {
     private bool isMine;
-    private bool isTrench;
     private bool isReveled;
+    public bool isFlaged;
     private int adjecentMines;
 
-    public TileState(bool isMine, bool isTrench)
+    public TileState(bool isMine)
     {
         this.isMine = isMine;
-        this.isTrench = isTrench;
     }
 
     public void SetAdjecentMines(int adjecentMines)
@@ -67,7 +114,7 @@ public class TileState
 
     public bool Revel()
     {
-        if (!isReveled)
+        if (!isReveled && !isFlaged)
         {
             isReveled = true;
             if (isMine)
@@ -85,10 +132,5 @@ public class TileState
     public int AdjacementMines
     {
         get { return adjecentMines; }
-    }
-
-    public void setTrench()
-    {
-        isTrench = true;
     }
 }
