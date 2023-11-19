@@ -10,12 +10,14 @@ public class MapHandler : MonoBehaviour
     int mineChance;
     [SerializeField]
     Tile[,] map = new Tile[0,0];
+    [SerializeField]
+    Sprite trenchSprite;
     Vector2 shift;
 
     public void CreateMap()
     {
         shift = transform.position;
-        MapGen.GenerateMap(width, height, tilePref, mineChance, shift, ref map);
+        MapGen.GenerateMap(width, height, tilePref, mineChance, shift, trenchSprite, ref map);
         GetComponent<BoxCollider2D>().size = new Vector2(width, height);
         GetComponent<BoxCollider2D>().offset = new Vector2(width, height)/2 - Vector2.one/2;
     }

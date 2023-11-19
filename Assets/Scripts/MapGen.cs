@@ -3,15 +3,18 @@ using UnityEngine;
 
 public static class MapGen
 {
-    public static Tile[,] GenerateMap(int width, int height, GameObject tilePref, float mineChance, Vector2 shift, ref Tile[,] map)
+    public static Tile[,] GenerateMap(int width, int height, GameObject tilePref, float mineChance, Vector2 shift, Sprite trenchSprite, ref Tile[,] map)
     {
         for(int i = 0; i < height; i++)
         {
             RowGen(width, ref map, tilePref, mineChance, shift);
         }
-
+        for(int xPos = 0; xPos < width; xPos++)
+        {
+            map[xPos, 0].Revel();
+        }
         //generacja okopów
-        GenerateTrench(ref map);
+        GenerateTrench(trenchSprite, ref map);
 
         return map;
     }
@@ -26,7 +29,7 @@ public static class MapGen
         {
             TileState state;
             //generating Tile
-            if(UnityEngine.Random.Range(0, 100)>(mineChance))
+            if(UnityEngine.Random.Range(0, 100)>(mineChance) || mapHeight==0)
             {
                 state = new TileState(false);
             }
@@ -92,15 +95,16 @@ public static class MapGen
         return mines;
     }
 
-    static void GenerateTrench(ref Tile[,] map)
+    static void GenerateTrench(Sprite trenchSprite, ref Tile[,] map)
     {
         //generuje serie po 4-6 tile'i okopów obok siebie, ma 20% szansa na pójście w górę 
         for(int yPos = 5; yPos < map.GetLength(1);yPos++)
         {
             int inRow = 0;
+            bool haveTrench = false;
             for (int xPos =0; xPos < map.GetLength(0); xPos++)
             {
-                if (map[xPos, yPos].IsMine && map[xPos, yPos].AdjacementMines==0)
+                if (!map[xPos, yPos].IsMine && map[xPos, yPos].AdjacementMines==0)
                 {
                     inRow++;
                 }
@@ -109,14 +113,20 @@ public static class MapGen
                     //tutaj sprawdza czy ma już wystarczająco długi łańcuch żeby zrobić okopy
                     if(inRow>=4)
                     {
-                        inRow-=UnityEngine.Random.Range(0, inRow-3);
+                        //tutaj musi sprawdzać czy nie ma trenchy w tej kolumnie w odległości 4 w dół
+                        inRow -= UnityEngine.Random.Range(0, inRow - 3);
                         //generuje okop
-                        for(int x = 0;  x < inRow; x++)
+                        for (int x = 0; x < inRow; x++)
                         {
-                            map[xPos-inRow+x, yPos].SetTrench();
+                            map[xPos - inRow + x, yPos].SetTrench(trenchSprite);
                         }
+                        haveTrench = true;
                     }
                     inRow = 0;
+                }
+                if (haveTrench && xPos == map.GetLength(0)-1)
+                {
+                    yPos++;
                 }
             }
         }

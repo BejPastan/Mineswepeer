@@ -37,10 +37,11 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public void SetTrench()
+    public void SetTrench(Sprite trenchSprite)
     {
         trench = true;
-        //tutaj musi podmieniać sprite i wyłączać metody
+        Revel();
+        gameObject.GetComponent<SpriteRenderer>().sprite = trenchSprite;
     }
 
     public void SetAdjecentMines(int adjecentMines)
@@ -57,7 +58,8 @@ public class Tile : MonoBehaviour
             if (notMine)
             {
                 //tutaj fajnie jakby nie wstawiał tekstu jeśli nie ma min wokół
-                text.GetComponent<TextMesh>().text = AdjacementMines.ToString();
+                if(AdjacementMines != 0)
+                    text.GetComponent<TextMesh>().text = AdjacementMines.ToString();
                 GetComponent<SpriteRenderer>().sprite = reveladSprite;
             }
             else
@@ -72,15 +74,18 @@ public class Tile : MonoBehaviour
 
     public void Flag()
     {
-        if(state.isFlaged)
+        if(!state.IsReveld)
         {
-            state.isFlaged = false;
-            flag.GetComponent<SpriteRenderer>().enabled = false;
-        }
-        else
-        {
-            state.isFlaged = true;
-            flag.GetComponent<SpriteRenderer>().enabled = true;
+            if (state.isFlaged)
+            {
+                state.isFlaged = false;
+                flag.GetComponent<SpriteRenderer>().enabled = false;
+            }
+            else
+            {
+                state.isFlaged = true;
+                flag.GetComponent<SpriteRenderer>().enabled = true;
+            }
         }
     }
 
@@ -129,8 +134,13 @@ public class TileState
     {
         get { return isMine; }
     }
+    public bool IsReveld
+    {
+        get { return isReveled; }
+    }
     public int AdjacementMines
     {
         get { return adjecentMines; }
     }
+
 }
