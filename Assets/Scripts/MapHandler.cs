@@ -17,6 +17,8 @@ public class MapHandler : MonoBehaviour
     [SerializeField]
     SquadControler squad;
 
+
+
     public void CreateMap()
     {
         shift = transform.position;
@@ -25,7 +27,7 @@ public class MapHandler : MonoBehaviour
         GetComponent<BoxCollider2D>().offset = new Vector2(width, height)/2 - Vector2.one/2;
     }
 
-    //muszę tutaj dodać rozróżnianie prawy lewy przycisk, aktualnie nie reaguje na prawy
+    
     private void OnMouseOver()
     {
         //muszę dodać sprawdzanie czy pole obok jest odkryte
@@ -54,10 +56,10 @@ public class MapHandler : MonoBehaviour
                             if (map[x,y].IsTrench)
                             {
                                 //true == moving units
-                                if(FindTrench(map[x,y]))
+                                if(squad.FindTrench(map[x,y]))
                                 {
-                                    
-                                    
+                                    Tile[] trenchToMove = GetTrenchesInRow(map[x, y]);
+                                    squad.MoveUnits(trenchToMove, ref map);
                                     return;
                                 }
                             }
@@ -82,12 +84,6 @@ public class MapHandler : MonoBehaviour
 
     }
 
-    private bool FindTrench(Tile trenchTile)
-    {
-        return squad.FindTrench(trenchTile);
-    }
-
-    //zbiera wszystkie tile'e trenchy wokół tego który ma teraz
     public Tile[] GetTrenchesInRow(Tile trenchInRow)
     {
         Tile[] trenches = new Tile[0];

@@ -19,13 +19,19 @@ public class SquadControler : MonoBehaviour
 
         //sprawdza czy może poruszyć się do tego Trench'a z aktualnej pozycji
 
+
         return true;
     }
 
-    //poruszanie jednostek
-    public void MoveUnits(Tile[] newTrench)
-    {
+    
 
+    //poruszanie jednostek
+    public void MoveUnits(Tile[] newTrench,ref Tile[,] map)
+    {
+        if(Pathfinding.GetWay())
+        {
+
+        }
     }
 
 }
