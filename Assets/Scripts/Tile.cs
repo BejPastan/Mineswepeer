@@ -94,6 +94,11 @@ public class Tile : MonoBehaviour
         get { return state.IsMine; }
     }
 
+    public bool IsTrench
+    {
+        get { return trench; }
+    }
+
     public int AdjacementMines
     {
         get { return state.AdjacementMines; }
