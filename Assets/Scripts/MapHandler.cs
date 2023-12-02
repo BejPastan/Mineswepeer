@@ -10,7 +10,7 @@ public class MapHandler : MonoBehaviour
     [SerializeField]
     int mineChance;
     [SerializeField]
-    Tile[,] map = new Tile[0,0];
+    public Tile[,] map = new Tile[0,0];
     [SerializeField]
     Sprite trenchSprite;
     Vector2 shift;
@@ -25,6 +25,9 @@ public class MapHandler : MonoBehaviour
         MapGen.GenerateMap(width, height, tilePref, mineChance, shift, trenchSprite, ref map);
         GetComponent<BoxCollider2D>().size = new Vector2(width, height);
         GetComponent<BoxCollider2D>().offset = new Vector2(width, height)/2 - Vector2.one/2;
+
+        Camera.main.orthographicSize = ((float)height / 2);
+        Camera.main.transform.position = new Vector3((float)width / 2, ((float)height / 2) -0.5f, -10);
     }
 
     
@@ -42,22 +45,21 @@ public class MapHandler : MonoBehaviour
                 //false is mine
                 if (selectedTile.Revel())
                 {
-
-                }
-                else
-                {
                     //tutaj sprawdza czy odkryty Tile nie dotyka Trench'a
                     int posX = Mathf.RoundToInt(mousePosition.x);
                     int posY = Mathf.RoundToInt(mousePosition.y);
-                    for (int x = posX-1; x<=posX+1; x++)
+                    for (int x = posX - 1; x <= posX + 1; x++)
                     {
                         for (int y = posY - 1; y <= posY + 1; y++)
                         {
-                            if (map[x,y].IsTrench)
+                            if (map[x, y].IsTrench)
                             {
                                 //true == moving units
-                                if(squad.FindTrench(map[x,y]))
+                                Debug.Log("będzie sprawdzał czy nie dotarł jeszcze do tego trencha");
+                                Debug.Log(map[x, y]);
+                                if (squad.FindTrench(ref map[x, y], ref map))
                                 {
+                                    Debug.Log("znaleziono trench");
                                     Tile[] trenchToMove = GetTrenchesInRow(map[x, y]);
                                     squad.MoveUnits(trenchToMove, ref map);
                                     return;
@@ -66,9 +68,12 @@ public class MapHandler : MonoBehaviour
                         }
                     }
                 }
+                else
+                {
+                    //trafił na minę                    
+                }
             }
             //sprawdza czy trafił na minę
-                //Ewentualnie jeśli trafił na pole wokół którego nie ma min(RevealMap)
         }
         else if (Input.GetMouseButtonDown(1))
         {
@@ -109,7 +114,6 @@ public class MapHandler : MonoBehaviour
     }
 
 
-
     private Tile GetTileOnPlace(Vector2 positionOnMap)
     {
         positionOnMap -= shift;
@@ -119,7 +123,7 @@ public class MapHandler : MonoBehaviour
         return map[posX, posY];
     }
 
-    private void GetPlaceOfTile(Tile tile, out int posX, out int posY)
+    public void GetPlaceOfTile(Tile tile, out int posX, out int posY)
     {
         posX = Mathf.RoundToInt(tile.transform.position.x + shift.y);
         posY = Mathf.RoundToInt(tile.transform.position.y + shift.y);

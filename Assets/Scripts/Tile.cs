@@ -8,14 +8,16 @@ public class Tile : MonoBehaviour
     Sprite reveladSprite;
     Transform flag;
     Transform text;
+    public int posX, posY;
     bool trench;
 
-    public void TileConstructor(TileState state, Vector2 location)
+    public void TileConstructor(TileState state, Vector2 location, int posX, int posY)
     {
         this.state = state;
         gameObject.transform.position = location;
-
-
+        this.posX = posX;
+        this.posY = posY;
+        transform.name = "Tile" + posX + "_" + posY;
         Transform[] potentialFlags = GetComponentsInChildren<Transform>();
         for(int i = 0; i < potentialFlags.Length; i++)
         {
@@ -97,6 +99,11 @@ public class Tile : MonoBehaviour
     public bool IsTrench
     {
         get { return trench; }
+    }
+
+    public bool IsReveald
+    {
+        get { return state.IsReveld; }
     }
 
     public int AdjacementMines

@@ -1,13 +1,138 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public static class Pathfinding
 {
-    //musi jeszcze oddawać trasę
-    public static bool GetWay(int StartX, int StartY, int EndX, int EndY,ref Tile[,] map)
+    private static Node[,] nodeMap;
+    private static int endX, endY;
+
+    public static bool GetWay(int StartX, int StartY, int endX, int endY, ref Tile[,] map, ref Tile[] path)
     {
-        //write pathfinding function in Unity C#. Your map is given as 2D array of type Tile and is named map. Tile have public function Revel(), and you can move only on Tile which Revel() return true. Start position is given in two ints StartX and StartY, the same with target position is give in EndX and EndY ints
+        path = new Tile[0];
+        nodeMap = new Node[map.GetLength(0), map.GetLength(1)];
+        nodeMap[StartX, StartY] = new Node(CalcDistance(StartX, StartY), 0, false, StartX, StartY, map[StartX, StartY]);
+        Node selectedNode = nodeMap[StartX, StartY];
+
+        while (selectedNode.x != endX && selectedNode.y != endY)
+        {
+            bool newSelect = false;
+            for(int x = 0; x<map.GetLength(0); x++)
+            {
+                for (int y = 0; y < map.GetLength(1); y++)
+                {
+                    if(nodeMap[x, y] != null)
+                    {
+                        if (!nodeMap[x, y].checkedNode)
+                        {
+                            //tu się wyjebie bo stary node będzie miał za małą cene
+                            if (nodeMap[x, y].GetPrice() < selectedNode.GetPrice() || !newSelect)
+                            {
+                                selectedNode = nodeMap[x, y];
+                                newSelect = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if(newSelect)
+            {
+                for (int x = selectedNode.x - 1; x >= selectedNode.x + 1; x++)
+                {
+                    for (int y = selectedNode.y - 1; y >= selectedNode.y + 1; y++)
+                    {
+                        if (x < 0 || y < 0 || (x == selectedNode.x && y == selectedNode.y))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            //updateuje lub tworzy nowy node
+                            if (map[x, y].IsReveald)
+                            {
+                                if (nodeMap[x, y] == null)
+                                {
+                                    nodeMap[x, y] = new Node(CalcDistance(x, y), 2, false, x, y, map[x,y], selectedNode);
+                                }
+                                nodeMap[x, y].SetNewPrice(selectedNode, endX, endY);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+            newSelect = false;
+        }
+
+        //zbieranie trasy
+        int nodeId = 0;
+        while (selectedNode.parent!= null)
+        {
+            Array.Resize(ref path, path.Length+1);
+            path[nodeId] = selectedNode.tile;
+            selectedNode = selectedNode.parent;
+        }
+
         return false;
+    }
+
+    private static int CalcDistance(int x, int y)
+    {
+        int price;
+
+        price = Mathf.Abs(endX-x) + Mathf.Abs(endY - y);
+
+        return price;
+    }
+}
+
+public class Node
+{
+    public float targetPrice;
+    public float movePrice;
+    public bool checkedNode;
+    public Node parent;
+    public int x, y;
+    public Tile tile;
+
+    public Node(float targetPrice, float movePrice, bool checkedNode, int x, int y, Tile tile, Node parent = null)
+    {
+        this.targetPrice = targetPrice;
+        this.movePrice = movePrice;
+        this.checkedNode = checkedNode;
+        this.parent = parent;
+        this.x = x;
+        this.y = y;
+        this.tile = tile;
+    }
+
+    public float GetPrice()
+    {
+        return targetPrice+movePrice;
+    }
+
+    public void SetNewPrice(Node parentNode, int endX, int endY)
+    {
+        float newMovePrice;
+        if(parentNode.x==x || parentNode.y==y)
+        {
+            newMovePrice = parentNode.movePrice+1;
+        }
+        else
+        {
+            newMovePrice = parentNode.movePrice + 1.4f;
+        }
+
+        if(newMovePrice<movePrice)
+        {
+            parent = parentNode;
+            movePrice = newMovePrice;
+        }
     }
 }

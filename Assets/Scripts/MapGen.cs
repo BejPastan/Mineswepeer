@@ -39,7 +39,7 @@ public static class MapGen
             }
             Vector2 location = new Vector2(xPos, mapHeight);
             GameObject newTile = GameObject.Instantiate(tilePref);
-            newTile.AddComponent<Tile>().TileConstructor(state, location+shift);
+            newTile.AddComponent<Tile>().TileConstructor(state, location+shift, xPos, mapHeight);
             Tile tileData = newTile.GetComponent<Tile>();
 
             map[xPos, mapHeight] = tileData;

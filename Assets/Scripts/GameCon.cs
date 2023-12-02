@@ -4,6 +4,7 @@ public class GameCon : MonoBehaviour
 {
     [SerializeField]
     MapHandler map;
+    [SerializeField]
     SquadControler squad;
     GameState gameState = GameState.start;
     //manage game states
@@ -12,9 +13,8 @@ public class GameCon : MonoBehaviour
     private void Start()
     {
         map.CreateMap();
+        squad.StartGame(ref map.map);
     }
-
-
 }
 
 enum GameState
