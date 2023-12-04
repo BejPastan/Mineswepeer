@@ -46,12 +46,13 @@ public class MapHandler : MonoBehaviour
                 if (selectedTile.Revel())
                 {
                     //tutaj sprawdza czy odkryty Tile nie dotyka Trench'a
-                    int posX = Mathf.RoundToInt(mousePosition.x);
-                    int posY = Mathf.RoundToInt(mousePosition.y);
+                    int posX, posY;
+                    GetPlaceOfTile(selectedTile, out posX, out posY);
                     for (int x = posX - 1; x <= posX + 1; x++)
                     {
                         for (int y = posY - 1; y <= posY + 1; y++)
                         {
+                            //Debug.Log("X= "+x +" Y= "+y);
                             if (map[x, y].IsTrench)
                             {
                                 //true == moving units
