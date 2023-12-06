@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public static class Pathfinding
@@ -14,9 +15,8 @@ public static class Pathfinding
         nodeMap[StartX, StartY] = new Node(CalcDistance(StartX, StartY), 0, false, StartX, StartY, map[StartX, StartY]);
         Node selectedNode = nodeMap[StartX, StartY];
 
-        int tries = 0;
-
-        while ((selectedNode.x != endX && selectedNode.y != endY) || tries<15)
+        //Debug.LogWarning("Cel: "+ endX + ", "+ endY);
+        while (selectedNode.x != endX || selectedNode.y != endY)
         {
             bool newSelect = false;
             for(int x = 0; x < map.GetLength(0); x++)
@@ -28,7 +28,7 @@ public static class Pathfinding
                         if (!nodeMap[x, y].checkedNode)
                         {
                             //tu się wyjebie bo stary node będzie miał za małą cene
-                            nodeMap[x, y].SetNewPrice(selectedNode, endX, endY);
+                            nodeMap[x, y].SetNewPrice(selectedNode);
                             if (nodeMap[x, y].GetPrice() < selectedNode.GetPrice() || !newSelect)
                             {
                                 selectedNode = nodeMap[x, y];
@@ -40,37 +40,43 @@ public static class Pathfinding
             }
             //Debug.LogWarning("selected node = " + selectedNode.x + ", " + selectedNode.y);
             selectedNode.checkedNode = true;
-            for (int x = selectedNode.x - 1; x <= selectedNode.x + 1; x++)
+            if(newSelect)
             {
-                
-                for (int y = selectedNode.y - 1; y <= selectedNode.y + 1; y++)
+                for (int x = selectedNode.x - 1; x <= selectedNode.x + 1; x++)
                 {
-                    
-                    if (x < 0 || y < 0 || (x == selectedNode.x && y == selectedNode.y))
+
+                    for (int y = selectedNode.y - 1; y <= selectedNode.y + 1; y++)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        //updateuje lub tworzy nowy node
-                        if (map[x, y].IsReveald)
-                        {   
-                            //Debug.Log("nowy node w "+x+", "+y);
-                            if (nodeMap[x, y] == null)
+
+                        if ((x == selectedNode.x && y == selectedNode.y) || x < 0 || x>=map.GetLength(0) || y<0)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            //updateuje lub tworzy nowy node
+                            //Debug.Log("Sprawdza czy pole "+x+", "+y + " jest odkryte");
+                            if (map[x, y].IsReveald)
                             {
-                                nodeMap[x, y] = new Node(CalcDistance(x, y), 2, false, x, y, map[x,y], selectedNode);
+                                //Debug.Log("nowy node w "+x+", "+y);
+                                if (nodeMap[x, y] == null)
+                                {
+                                    nodeMap[x, y] = new Node(CalcDistance(x, y), 2, false, x, y, map[x, y], selectedNode);
+                                }
+                                nodeMap[x, y].SetNewPrice(selectedNode);
+                                //Debug.Log(nodeMap[x, y].GetPrice());
                             }
-                            nodeMap[x, y].SetNewPrice(selectedNode, endX, endY);
-                            //Debug.Log(nodeMap[x, y].GetPrice());
                         }
                     }
                 }
             }
-            
-            tries++;
+            else
+            {
+                return false;
+            }
         }
 
-        Debug.Log("Znalazł trasę");
+        //Debug.Log("Znalazł trasę");
 
         //zbieranie trasy
         //muszę to odwrócić
@@ -81,18 +87,12 @@ public static class Pathfinding
         {
             Array.Resize(ref path, path.Length+1);
             path[path.Length - 1] = selectedNode.parent.tile;
-            Debug.Log(path[nodeId]);
+            //Debug.Log(path[nodeId]);
             selectedNode = selectedNode.parent;
             nodeId++;
         }
-
-        Debug.Log("zebrał trasę");
-        Debug.Log(path.Length);
-        foreach (Tile tile in path)
-        {
-            Debug.Log("kolejny punkt" + tile.posX + ", " + tile.posY);
-        }
-            return false;
+        Array.Reverse(path);
+        return true;
     }
 
     private static int CalcDistance(int x, int y)
@@ -130,7 +130,7 @@ public class Node
         return targetPrice+movePrice;
     }
 
-    public void SetNewPrice(Node parentNode, int endX, int endY)
+    public void SetNewPrice(Node parentNode)
     {
         float newMovePrice;
         if(parentNode.x==x || parentNode.y==y)
@@ -139,7 +139,7 @@ public class Node
         }
         else
         {
-            newMovePrice = parentNode.movePrice + 1.4f;
+            newMovePrice = parentNode.movePrice + 2;
         }
 
         if(newMovePrice<movePrice)

@@ -169,11 +169,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   width: 20
-  height: 25
+  height: 200
   tilePref: {fileID: 8378349341349337224, guid: 38b73ccea1d4f764190fcd1cebabe1d9, type: 3}
   mineChance: 10
   trenchSprite: {fileID: 21300000, guid: 8fc6adb740376814f95b6ac60e2142ac, type: 3}
   squad: {fileID: 1987763486}
+  visibleHeight: 20
 --- !u!61 &669369983
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -232,6 +233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1493947905}
   - component: {fileID: 1493947903}
+  - component: {fileID: 1493947906}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -253,6 +255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   map: {fileID: 669369982}
   squad: {fileID: 1987763486}
+  bombardment: {fileID: 1493947906}
 --- !u!4 &1493947905
 Transform:
   m_ObjectHideFlags: 0
@@ -268,6 +271,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1493947906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493947902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d1005f903140ce4383c3b828204ade0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  artyDelay: 5000
+  flightTime: 1000
+  explosionRange: 2
+  accuracy: {x: 2, y: 3}
+  map: {fileID: 669369982}
+  squad: {fileID: 1987763486}
+  shotsNum: 3
+  explosionParticle: {fileID: 5497231972857754480, guid: 52b14a3bf9c132446a544e057980d215, type: 3}
 --- !u!1001 &1840723602
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -275,6 +298,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5715122037744307543, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715122037744307543, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6780695677888046521, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_Name
       value: Soldier (2)
@@ -442,6 +473,7 @@ MonoBehaviour:
   - {fileID: 1276875450}
   - {fileID: 2117786619}
   - {fileID: 720202644}
+  bombardment: {fileID: 1493947906}
 --- !u!4 &1987763487
 Transform:
   m_ObjectHideFlags: 0
@@ -464,6 +496,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5715122037744307543, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715122037744307543, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6780695677888046521, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_Name
       value: Soldier (1)
@@ -474,15 +514,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.6994415
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.4124277
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.17649215
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalRotation.w
@@ -521,6 +561,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5715122037744307543, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715122037744307543, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6780695677888046521, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_Name
       value: Soldier
@@ -531,15 +579,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.6994415
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.4124277
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.17649215
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8595765012885305430, guid: cc500cd4a8c724b439992027c7b67b12, type: 3}
       propertyPath: m_LocalRotation.w

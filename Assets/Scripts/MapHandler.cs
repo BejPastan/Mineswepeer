@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MapHandler : MonoBehaviour
@@ -16,7 +17,8 @@ public class MapHandler : MonoBehaviour
     Vector2 shift;
     [SerializeField]
     SquadControler squad;
-
+    [SerializeField]
+    int visibleHeight;
 
 
     public void CreateMap()
@@ -26,8 +28,8 @@ public class MapHandler : MonoBehaviour
         GetComponent<BoxCollider2D>().size = new Vector2(width, height);
         GetComponent<BoxCollider2D>().offset = new Vector2(width, height)/2 - Vector2.one/2;
 
-        Camera.main.orthographicSize = ((float)height / 2);
-        Camera.main.transform.position = new Vector3((float)width / 2, ((float)height / 2) -0.5f, -10);
+        Camera.main.orthographicSize = (visibleHeight / 2);
+        Camera.main.transform.position = new Vector3((float)width / 2, (visibleHeight / 2) -0.5f, -10);
     }
 
     
@@ -74,7 +76,6 @@ public class MapHandler : MonoBehaviour
                     //trafił na minę                    
                 }
             }
-            //sprawdza czy trafił na minę
         }
         else if (Input.GetMouseButtonDown(1))
         {
@@ -99,16 +100,24 @@ public class MapHandler : MonoBehaviour
         int newX = Xpos;
         while(map[newX, Ypos].IsTrench)
         {
-            Array.Resize(ref trenches, trenches.Length + 1);
-            trenches[trenches.Length - 1] = map[newX, Ypos];
-            newX--;
+                Array.Resize(ref trenches, trenches.Length + 1);
+                trenches[trenches.Length - 1] = map[newX, Ypos];
+                newX--;
+            if(newX < 0)
+            {
+                break;
+            }
         }
         newX = Xpos+1;
         while (map[newX, Ypos].IsTrench)
         {
-            Array.Resize(ref trenches, trenches.Length + 1);
-            trenches[trenches.Length - 1] = map[newX, Ypos];
-            newX++;
+                Array.Resize(ref trenches, trenches.Length + 1);
+                trenches[trenches.Length - 1] = map[newX, Ypos];
+                newX++;
+            if (newX > map.GetLength(0)-1)
+            {
+                break;
+            }
         }
 
         return trenches;
@@ -128,5 +137,31 @@ public class MapHandler : MonoBehaviour
     {
         posX = Mathf.RoundToInt(tile.transform.position.x + shift.y);
         posY = Mathf.RoundToInt(tile.transform.position.y + shift.y);
+    }
+
+    public Tile GetTile(int x, int y)
+    {
+        return map[x, y];
+    }
+
+    public List<Tile> GetTilesInRange(Tile center, int range)
+    {
+        List<Tile> tilesInRange = new List<Tile>();
+        int posX, posY;
+        GetPlaceOfTile(center, out posX, out posY);
+        for(int x = posX-range; x <= posX+range; x++)
+        {
+            for(int y = posY-range; y <= posY+range; y++)
+            {
+                if(x >= 0 && x < map.GetLength(0) && y >= 0 && y < map.GetLength(1))
+                {
+                    if (!map[x,y].IsTrench)
+                    {
+                        tilesInRange.Add(map[x, y]);
+                    }
+                }
+            }
+        }
+        return tilesInRange;
     }
 }

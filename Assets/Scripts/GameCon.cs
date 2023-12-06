@@ -6,6 +6,8 @@ public class GameCon : MonoBehaviour
     MapHandler map;
     [SerializeField]
     SquadControler squad;
+    [SerializeField]
+    Bombardment bombardment;
     GameState gameState = GameState.start;
     //manage game states
         //play, pause, end, start
@@ -14,6 +16,7 @@ public class GameCon : MonoBehaviour
     {
         map.CreateMap();
         squad.StartGame(ref map.map);
+        bombardment.StartBombard();
     }
 }
 
